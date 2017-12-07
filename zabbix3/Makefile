@@ -29,16 +29,21 @@ include $(INCLUDE_DIR)/nls.mk
 
 CONFIGURE_ARGS+= \
 	--disable-java \
-	$(call autoconf_bool,CONFIG_IPV6,ipv6) 
+	$(call autoconf_bool,CONFIG_IPV6,ipv6)
 
-ifdef ZABBIX3_OPENSSL
- CONFIGURE_ARGS += --with-openssl="$(STAGING_DIR)/usr" 
+ifdef CONFIG_ZABBIX3_OPENSSL
+ CONFIGURE_ARGS += --with-openssl="$(STAGING_DIR)/usr"
  ZDEPENDS += +libopenssl
 endif
 
-ifdef ZABBIX3_GNUTLS
+ifdef CONFIG_ZABBIX3_GNUTLS
   CONFIGURE_ARGS += --with-gnutls="$(STAGING_DIR)/usr"
   ZDEPENDS += +libgnutls
+endif
+
+ifdef CONFIG_ZABBIX3_MBEDTLS
+  CONFIGURE_ARGS += --with-mbedtls="$(STAGING_DIR)/usr"
+  ZDEPENDS += +libpolarssl
 endif
 
 ifdef CONFIG_PACKAGE_zabbix3-server
@@ -59,7 +64,7 @@ ifdef CONFIG_ZABBIX3_CURL
 endif
 
 ifdef CONFIG_ZABBIX3_XML2
- CONFIGURE_ARGS += --with-libxml2="$(STAGING_DIR)/usr/" 
+ CONFIGURE_ARGS += --with-libxml2="$(STAGING_DIR)/usr/"
  ZDEPENDS += +libxml2
 endif
 
@@ -87,13 +92,13 @@ endef
 define Package/zabbix3-agentd
   $(call Package/zabbix3/Default)
   TITLE+= agentd
-  DEPENDS += +zabbix3-core 
+  DEPENDS += +zabbix3-core
 endef
 
 define Package/zabbix3-sender
   $(call Package/zabbix3/Default)
   TITLE+= sender
-  DEPENDS += +zabbix3-core 
+  DEPENDS += +zabbix3-core
 endef
 
 define Package/zabbix3-get
@@ -240,4 +245,3 @@ $(eval $(call BuildPackage,zabbix3-sender))
 $(eval $(call BuildPackage,zabbix3-server))
 $(eval $(call BuildPackage,zabbix3-proxy))
 $(eval $(call BuildPackage,zabbix3-get))
-
